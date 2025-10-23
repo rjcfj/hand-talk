@@ -75,6 +75,11 @@ MONGO_URI=mongodb://mongo:27017/handtalk_accessibility
 PORT=4000
 ```
 
+Crie um arquivo `.env` na raiz do frontend:
+
+```
+VITE_API_URL=http://localhost:4000/api
+```
 
 ### Instalação das dependências
 
