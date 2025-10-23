@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # 🟢 MongoDB
   mongo:
@@ -8,6 +6,11 @@ services:
       - mongo-data:/data/db
     ports:
       - "27017:27017"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
 
   # 🟣 Backend (Node + Express + Mongoose + Puppeteer)
   backend:
@@ -21,6 +24,7 @@ services:
       - NODE_ENV=development
       - MONGO_URI=mongodb://mongo:27017/handtalk_accessibility
       - PORT=4000
+      - REDIS_URL=redis://redis:6379
     ports:
       - "4000:4000"
     depends_on:
