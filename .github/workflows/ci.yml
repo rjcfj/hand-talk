@@ -6,9 +6,14 @@ on:
   pull_request:
     branches: [main, master]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -22,38 +27,33 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install pnpm (fixed version)
+      - name: Install pnpm
         run: npm install -g pnpm@8.10.0
 
-      - name: Verify pnpm version
-        run: pnpm --version
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ~/.cache/puppeteer
+            ~/.cache/mongodb-memory-server
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
-      - name: Approve esbuild to avoid warnings
-        run: pnpm config set ignore-scripts false
-
-      - name: Install dependencies (frontend)
+      - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
         working-directory: frontend
 
-      - name: Run frontend lint (optional)
-        run: pnpm lint || true
-        working-directory: frontend
-
-      - name: Run frontend tests with coverage
+      - name: Run frontend tests
         run: pnpm test
         working-directory: frontend
         env:
           CI: true
-
-      - name: Upload frontend coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-coverage
-          path: frontend/coverage
 
   backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -67,32 +67,26 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install pnpm (fixed version)
+      - name: Install pnpm
         run: npm install -g pnpm@8.10.0
 
-      - name: Verify pnpm version
-        run: pnpm --version
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ~/.cache/puppeteer
+            ~/.cache/mongodb-memory-server
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
-      - name: Approve esbuild to avoid warnings
-        run: pnpm config set ignore-scripts false
-
-      - name: Install dependencies (backend)
+      - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
         working-directory: backend
 
-      - name: Run backend lint (optional)
-        run: pnpm lint || true
-        working-directory: backend
-
-      - name: Run backend tests with coverage
+      - name: Run backend tests
         run: pnpm test
         working-directory: backend
         env:
           CI: true
-
-      - name: Upload backend coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-coverage
-          path: backend/coverage
