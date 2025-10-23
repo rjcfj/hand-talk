@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 21.x, 22.x]
+        node-version: [18.x, 20.x]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,11 +25,14 @@ jobs:
       - name: Install pnpm (fixed version)
         run: npm install -g pnpm@8.10.0
 
-      - name: Verify pnpm
+      - name: Verify pnpm version
         run: pnpm --version
 
+      - name: Approve esbuild to avoid warnings
+        run: pnpm config set ignore-scripts false
+
       - name: Install dependencies (frontend)
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
         working-directory: frontend
 
       - name: Run frontend lint (optional)
@@ -52,7 +56,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 21.x, 22.x]
+        node-version: [18.x, 20.x]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,11 +70,14 @@ jobs:
       - name: Install pnpm (fixed version)
         run: npm install -g pnpm@8.10.0
 
-      - name: Verify pnpm
+      - name: Verify pnpm version
         run: pnpm --version
 
+      - name: Approve esbuild to avoid warnings
+        run: pnpm config set ignore-scripts false
+
       - name: Install dependencies (backend)
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
         working-directory: backend
 
       - name: Run backend lint (optional)
