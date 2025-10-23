@@ -5,6 +5,7 @@ import { createServer } from "http";
 import { Server as IOServer } from "socket.io";
 import { createApp } from "./app";
 import analysisRoutes from "./routes/analysisRoutes";
+import infoRouter from "./routes/info";
 
 const mongoUri = process.env.MONGO_URI;
 if (!mongoUri) throw new Error("MONGO_URI não está definido no .env");
@@ -23,6 +24,7 @@ const io = new IOServer(server, {
   },
 });
 
+app.use("/", infoRouter);
 // Passa o io para as rotas que precisam dele
 app.use("/api", analysisRoutes(io));
 
