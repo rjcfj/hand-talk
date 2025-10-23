@@ -57,7 +57,7 @@
     <div class="mt-4 flex justify-between items-center">
       <div class="flex items-center">
         <button
-          class="bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-orange-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition duration-300 ease-in-out"
+          class="px-4 py-2 rounded-lg font-semibold bg-orange-500 text-white shadow-md hover:bg-orange-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition duration-200 ease-in-out"
           :disabled="page === 1 || loading"
           @click="changePage(page - 1)"
         >
@@ -67,9 +67,11 @@
         <template v-for="p in dynamicPages" :key="p.key">
           <button
             v-if="p.type === 'page'"
-            class="px-4 py-2 rounded border mx-1"
+            class="px-4 py-2 rounded-lg mx-1 font-medium transition duration-200 ease-in-out hover:bg-orange-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
             :class="
-              p.number === page ? 'bg-orange-500 text-white' : 'bg-gray-200'
+              p.number === page
+                ? 'bg-orange-500 text-white'
+                : 'bg-gray-200 text-gray-700'
             "
             @click="changePage(p.number)"
           >
@@ -79,7 +81,7 @@
         </template>
 
         <button
-          class="bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-orange-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition duration-300 ease-in-out"
+          class="px-4 py-2 rounded-lg font-semibold bg-orange-500 text-white shadow-md hover:bg-orange-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition duration-200 ease-in-out"
           :disabled="page === totalPages || loading"
           @click="changePage(page + 1)"
         >
@@ -93,7 +95,7 @@
           <select
             v-model.number="limit"
             @change="changeLimit"
-            class="ml-2 border rounded px-2 py-1"
+            class="ml-2 border rounded-lg px-3 py-1 bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
           >
             <option v-for="n in [5, 10, 20, 50]" :key="n" :value="n">
               {{ n }}
