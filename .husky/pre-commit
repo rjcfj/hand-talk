@@ -1,0 +1,4 @@
+pnpm dlx husky-init && pnpm install
+pnpm set-script prepare "husky install"
+pnpm run prepare
+npx husky add .husky/pre-commit "pnpm -r exec -- lint-staged"

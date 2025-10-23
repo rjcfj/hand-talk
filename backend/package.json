@@ -1,0 +1,42 @@
+{
+  "name": "hand-talk-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axe-core": "^4.11.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.2",
+    "puppeteer": "^24.26.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.9.1",
+    "@types/supertest": "^6.0.3",
+    "dotenv": "^17.2.3",
+    "mongodb-memory-server": "^10.2.3",
+    "supertest": "^7.1.4",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.1"
+  },
+  "lint-staged": {
+    "*.{ts,js,vue}": [
+      "eslint --fix",
+      "git add"
+    ]
+  }
+}
