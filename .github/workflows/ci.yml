@@ -27,7 +27,7 @@ jobs:
       - name: Verify pnpm
         run: pnpm --version
 
-      - name: Install dependencies
+      - name: Install dependencies (frontend)
         run: pnpm install --frozen-lockfile
         working-directory: frontend
 
@@ -68,7 +68,7 @@ jobs:
       - name: Verify pnpm
         run: pnpm --version
 
-      - name: Install dependencies
+      - name: Install dependencies (backend)
         run: pnpm install --frozen-lockfile
         working-directory: backend
 
