@@ -11,32 +11,32 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [18.x, 20.x]
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
 
       - name: Setup pnpm
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
+          pnpm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Run frontend lint
-        run: pnpm lint
         working-directory: frontend
-        continue-on-error: true # opcional, não quebra CI
 
-      - name: Run frontend tests
-        run: pnpm -r test
+      - name: Run frontend lint (optional)
+        run: pnpm lint || true
+        working-directory: frontend
+
+      - name: Run frontend tests with coverage
+        run: pnpm test
         working-directory: frontend
         env:
           CI: true
@@ -52,32 +52,32 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [18.x, 20.x]
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
 
       - name: Setup pnpm
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
+          pnpm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Run backend lint
-        run: pnpm lint
         working-directory: backend
-        continue-on-error: true
 
-      - name: Run backend tests
-        run: pnpm -r test
+      - name: Run backend lint (optional)
+        run: pnpm lint || true
+        working-directory: backend
+
+      - name: Run backend tests with coverage
+        run: pnpm test
         working-directory: backend
         env:
           CI: true
