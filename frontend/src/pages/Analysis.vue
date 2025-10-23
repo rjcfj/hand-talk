@@ -14,7 +14,6 @@
       </thead>
       <tbody>
         <template v-for="item in data" :key="item.id">
-          <!-- linha principal -->
           <tr
             class="hover:bg-gray-50 cursor-pointer"
             @click="toggleDetails(item.id)"
@@ -22,7 +21,9 @@
             <td class="border border-gray-200 px-4 py-2">{{ item.url }}</td>
             <td
               class="border border-gray-200 px-4 py-2 text-center font-semibold"
-              :class="item.issues.length === 0 ? 'text-green-600' : 'text-red-600'"
+              :class="
+                item.issues.length === 0 ? 'text-green-600' : 'text-red-600'
+              "
             >
               {{ item.issues.length }}
             </td>
@@ -31,10 +32,12 @@
             </td>
           </tr>
 
-          <!-- linha de detalhes -->
           <tr v-if="openIndex === item.id">
             <td colspan="3" class="bg-gray-50 p-4 border border-gray-200">
-              <div v-if="item.issues.length === 0" class="text-green-600 font-medium">
+              <div
+                v-if="item.issues.length === 0"
+                class="text-green-600 font-medium"
+              >
                 Nenhum problema detectado ✅
               </div>
               <ul v-else class="list-disc list-inside space-y-2">
@@ -50,12 +53,62 @@
       </tbody>
     </table>
 
+    <!-- Paginação dinâmica -->
+    <div class="mt-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <button
+          class="bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-orange-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition duration-300 ease-in-out"
+          :disabled="page === 1 || loading"
+          @click="changePage(page - 1)"
+        >
+          Anterior
+        </button>
+
+        <template v-for="p in dynamicPages" :key="p.key">
+          <button
+            v-if="p.type === 'page'"
+            class="px-4 py-2 rounded border mx-1"
+            :class="
+              p.number === page ? 'bg-orange-500 text-white' : 'bg-gray-200'
+            "
+            @click="changePage(p.number)"
+          >
+            {{ p.number }}
+          </button>
+          <span v-else class="mx-1">…</span>
+        </template>
+
+        <button
+          class="bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-orange-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition duration-300 ease-in-out"
+          :disabled="page === totalPages || loading"
+          @click="changePage(page + 1)"
+        >
+          Próxima
+        </button>
+      </div>
+
+      <div>
+        <label>
+          Itens por página:
+          <select
+            v-model.number="limit"
+            @change="changeLimit"
+            class="ml-2 border rounded px-2 py-1"
+          >
+            <option v-for="n in [5, 10, 20, 50]" :key="n" :value="n">
+              {{ n }}
+            </option>
+          </select>
+        </label>
+      </div>
+    </div>
+
     <p v-if="loading" class="mt-4 text-gray-600">Carregando análises...</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import axios from "axios";
 
 interface IssueNode {
@@ -84,11 +137,20 @@ const loading = ref(false);
 const openIndex = ref<string | null>(null);
 const apiUrl = import.meta.env.VITE_API_URL;
 
+const page = ref(1);
+const limit = ref(5);
+const totalPages = ref(1);
+const totalItems = ref(0);
+
 const fetchResults = async () => {
   loading.value = true;
   try {
-    const response = await axios.get(`${apiUrl}/results`);
-    data.value = response.data;
+    const response = await axios.get(`${apiUrl}/results`, {
+      params: { page: page.value, limit: limit.value },
+    });
+    data.value = response.data.data;
+    totalPages.value = response.data.totalPages;
+    totalItems.value = response.data.total;
   } catch (err) {
     console.error("Erro ao buscar resultados", err);
   } finally {
@@ -99,6 +161,47 @@ const fetchResults = async () => {
 const toggleDetails = (id: string) => {
   openIndex.value = openIndex.value === id ? null : id;
 };
+
+const changePage = (newPage: number) => {
+  page.value = newPage;
+};
+
+const changeLimit = () => {
+  page.value = 1; // reset página ao mudar limite
+};
+
+// Computa páginas dinâmicas com elipses
+const dynamicPages = computed(() => {
+  const pages = [];
+  const maxDisplay = 5; // número máximo de páginas visíveis sem elipses
+  if (totalPages.value <= maxDisplay) {
+    for (let i = 1; i <= totalPages.value; i++)
+      pages.push({ type: "page", number: i, key: i });
+  } else {
+    // sempre mostra primeira e última página
+    pages.push({ type: "page", number: 1, key: 1 });
+
+    let start = Math.max(2, page.value - 1);
+    let end = Math.min(totalPages.value - 1, page.value + 1);
+
+    if (start > 2) pages.push({ type: "dots", key: "dots-start" });
+    for (let i = start; i <= end; i++)
+      pages.push({ type: "page", number: i, key: i });
+    if (end < totalPages.value - 1)
+      pages.push({ type: "dots", key: "dots-end" });
+
+    pages.push({
+      type: "page",
+      number: totalPages.value,
+      key: totalPages.value,
+    });
+  }
+  return pages;
+});
+
+watch([page, limit], () => {
+  fetchResults();
+});
 
 onMounted(() => {
   fetchResults();
