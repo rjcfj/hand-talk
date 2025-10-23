@@ -18,32 +18,11 @@ O HandTalk Accessibility tem como objetivo principal:
 ## 📁 Estrutura do Projeto
 ```
 hand-talk/
-├─ backend/
-│ ├─ src/
-│ │ ├─ controllers/
-│ │ │ └─ analysisController.ts
-│ │ ├─ models/
-│ │ │ └─ Analysis.ts
-│ │ ├─ routes/
-│ │ │ └─ analysisRoutes.ts
-│ │ ├─ app.ts
-│ │ └─ server.ts
-│ ├─ package.json
-│ └─ tsconfig.json
-├─ frontend/
-│ ├─ src/
-│ │ ├─ components/
-│ │ │ └─ AnalysisResults.vue
-│ │ ├─ views/
-│ │ ├─ App.vue
-│ │ └─ main.ts
-│ ├─ package.json
-│ └─ vite.config.ts
-├─ docker-compose.yml
-├─ .env
-└─ README.md
+├── backend/ # API REST (Node.js, Express, Puppeteer, MongoDB)
+├── frontend/ # SPA em Vue 3 (Vite + TailwindCSS)
+├── .github/ # Pipelines CI/CD (GitHub Actions)
+└── docker-compose.yml # Docker
 ```
-
 
 ---
 
