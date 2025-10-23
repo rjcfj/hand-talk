@@ -1,9 +1,35 @@
 <template>
   <div class="mt-24 max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-8">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-6">
-      Resultados de Análises
-    </h2>
+    <!-- Cabeçalho com botão Voltar -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center space-x-4">
+        <button
+          @click="goBack"
+          class="px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-700 shadow-sm hover:bg-gray-300 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
+        >
+          ← Voltar
+        </button>
+        <h2 class="text-2xl font-semibold text-gray-900">
+          Resultados de Análises
+        </h2>
+      </div>
+      <div>
+        <label>
+          Itens por página:
+          <select
+            v-model.number="limit"
+            @change="changeLimit"
+            class="ml-2 border rounded-lg px-3 py-1 bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
+          >
+            <option v-for="n in [5, 10, 20, 50]" :key="n" :value="n">
+              {{ n }}
+            </option>
+          </select>
+        </label>
+      </div>
+    </div>
 
+    <!-- Tabela de resultados -->
     <table class="min-w-full border-collapse border border-gray-200">
       <thead class="bg-gray-100 text-gray-700">
         <tr>
@@ -53,7 +79,7 @@
       </tbody>
     </table>
 
-    <!-- Paginação dinâmica -->
+    <!-- Paginação -->
     <div class="mt-4 flex justify-between items-center">
       <div class="flex items-center">
         <button
@@ -87,21 +113,6 @@
         >
           Próxima
         </button>
-      </div>
-
-      <div>
-        <label>
-          Itens por página:
-          <select
-            v-model.number="limit"
-            @change="changeLimit"
-            class="ml-2 border rounded-lg px-3 py-1 bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
-          >
-            <option v-for="n in [5, 10, 20, 50]" :key="n" :value="n">
-              {{ n }}
-            </option>
-          </select>
-        </label>
       </div>
     </div>
 
@@ -172,17 +183,19 @@ const changeLimit = () => {
   page.value = 1; // reset página ao mudar limite
 };
 
+const goBack = () => {
+  window.history.back();
+};
+
 // Computa páginas dinâmicas com elipses
 const dynamicPages = computed(() => {
   const pages = [];
-  const maxDisplay = 5; // número máximo de páginas visíveis sem elipses
+  const maxDisplay = 5;
   if (totalPages.value <= maxDisplay) {
     for (let i = 1; i <= totalPages.value; i++)
       pages.push({ type: "page", number: i, key: i });
   } else {
-    // sempre mostra primeira e última página
     pages.push({ type: "page", number: 1, key: 1 });
-
     let start = Math.max(2, page.value - 1);
     let end = Math.min(totalPages.value - 1, page.value + 1);
 
